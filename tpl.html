@@ -480,9 +480,10 @@ body::before{will-change:transform}
                   onUpdate: function(){ if (onThird && gsap.getProperty(body, 'y') >= H / 3) { var f = onThird; onThird = null; f(); } } });
   }
   // Las hojas no llevan href: así el visor no abre el enlace al instante. Se abre a mano, a mitad de la caída.
+  // Abre en pestaña nueva. Si el navegador la bloquea, abre en la misma pestaña: el enlace nunca se pierde.
   function go(url){
-    var a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener';
-    a.style.display = 'none'; document.body.appendChild(a); a.click(); a.remove();
+    var w = null; try { w = window.open(url, '_blank'); } catch (e) {}
+    if (w) { try { w.opener = null; } catch (e) {} } else window.location.href = url;
   }
   document.querySelectorAll('a.post').forEach(function(post){
     var url = post.dataset.href;
@@ -491,7 +492,11 @@ body::before{will-change:transform}
       if (!hasGsap || reduce) { go(url); return; }
       if (post._torn) return;
       post._torn = true;
-      tearPost(post, function(){ go(url); });
+      // El enlace se abre con un temporizador que nace del clic (no desde la animación): así Safari y Firefox
+      // lo reconocen como acción del usuario y no lo bloquean. Se calcula para que coincida con el tercio de la caída.
+      var H = post.clientHeight, t = Math.min(900, 160 + 1000 * Math.sqrt(2 * (H / 3) / 2300));
+      tearPost(post, null);
+      setTimeout(function(){ go(url); }, t);
     }
     post.addEventListener('click', open);
     post.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' ') open(ev); });
