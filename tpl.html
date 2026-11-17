@@ -316,7 +316,12 @@ body::before{will-change:transform}
     gsap.killTweensOf(el, 'scaleY');
     gsap.timeline().to(el, { scaleY: .972, duration: .16, ease: 'sine.out' }).to(el, { scaleY: 1, duration: .34, ease: 'sine.inOut' });
   }
+  // Mientras se hace scroll (y 160 ms después), la pared se queda quieta: ni viento al pasar el cursor
+  // ni hojas arrancándose. Los contadores se ponen al día en cuanto el scroll se detiene.
+  var scrolling = false, scrollT = 0;
+  window.addEventListener('scroll', function(){ scrolling = true; clearTimeout(scrollT); scrollT = setTimeout(function(){ scrolling = false; }, 160); }, { passive: true });
   function sway(els, dir){
+    if (scrolling) return;
     if (!hasGsap || reduce) return;
     gsap.killTweensOf(els, 'rotation');
     gsap.timeline().to(els, { rotation: 1.7 * dir, duration: .17, ease: 'sine.out' }).to(els, { rotation: 0, duration: .38, ease: 'sine.inOut' });
@@ -511,7 +516,7 @@ body::before{will-change:transform}
   }
   syncDay();
   var ticks = [];
-  setInterval(function(){ var sec = secondsSinceMidnightMX(); for (var i = 0; i < ticks.length; i++) ticks[i](sec); }, 200);
+  setInterval(function(){ if (scrolling) return; var sec = secondsSinceMidnightMX(); for (var i = 0; i < ticks.length; i++) ticks[i](sec); }, 200);
   document.querySelectorAll('.stack').forEach(function(stack){
     var d = stack.dataset, every = parseFloat(d.every), nail = stack.querySelector('.tor');
     var k = d.mode === 'static' ? 0 : Math.floor(secondsSinceMidnightMX() / every), visible = true;
