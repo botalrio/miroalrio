@@ -64,7 +64,7 @@ header.wrap{padding-top:clamp(20px,3.6vw,47px);padding-bottom:clamp(36px,5vw,60p
 .wordmark.pie{display:inline-block;font-size:24px;line-height:1.25}
 .wordmark.pie .a{display:block;font-size:var(--t2);margin-top:2px}
 nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 30px}
-nav a{font-weight:600;font-size:var(--t2);letter-spacing:.06em;text-transform:uppercase}
+nav a{font-weight:400;font-size:var(--t2);text-transform:uppercase;opacity:.72;text-decoration:underline;text-underline-offset:3px}
 
 /* Títulos de sección: chicos, como rótulo escrito sobre el muro */
 .sec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 6px;padding-left:clamp(0px,7vw,96px)}
@@ -177,7 +177,7 @@ body::before{will-change:transform}
     <span class="wordmark" id="inicio"><span class="mk">MIRO AL RÍO <span class="a">(Y SONRÍO)</span></span></span>
     <nav aria-label="Principal">
       <ul>
-        <li><a class="tap chip" href="https://linktr.ee/miroalrio"><span class="mk-sm jitw">Linktree</span></a></li>
+        <li><a class="tap chip" href="https://linktr.ee/miroalrio"><span class="mk-sm">Linktree</span></a></li>
       </ul>
     </nav>
   </div>
@@ -264,55 +264,40 @@ body::before{will-change:transform}
   // entre más se estiró, más fuerte cae, sin rebotar ni trabarse. Fuera del final, el scroll es el nativo del sistema.
   (function(){
     var muro = document.getElementById('muro'), lienzo = document.getElementById('lienzo'), zoc = document.querySelector('.zocalo');
-    var R = 190, pull = 0, s = 0, v = 0, raf = 0, holding = false, relT = 0, lastD = 0, decay = 0, coast = false;
+    var R = 190, pull = 0, s = 0, v = 0, raf = 0, holding = false, relT = 0, lastD = 0, decay = 0;
     function size(){ muro.style.height = Math.round(zoc.getBoundingClientRect().top - lienzo.getBoundingClientRect().top + 80) + 'px'; }
     size(); window.addEventListener('resize', size); window.addEventListener('load', size);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
     function atEnd(){ return window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 1; }
     function paint(){
-      if (s > .05) { lienzo.style.willChange = 'transform'; lienzo.style.transform = 'translate3d(0,' + (-s).toFixed(2) + 'px,0)'; }
-      else { lienzo.style.transform = ''; lienzo.style.willChange = ''; }
+      if (s > .3) { lienzo.style.willChange = 'transform'; lienzo.style.transform = 'translate3d(0,' + (-s).toFixed(2) + 'px,0)'; }
+      else { s = 0; v = 0; lienzo.style.transform = ''; lienzo.style.willChange = ''; }
     }
     function stretch(p){ pull = Math.max(0, p); s = R * (1 - Math.exp(-pull / R)); paint(); }
     function unstretch(x){ return x <= 0 ? 0 : -R * Math.log(1 - Math.min(x, R - .01) / R); }
-    function spring(v0){
-      cancelAnimationFrame(raf); var last = performance.now(), w = 13; if (v0) v = v0;
+    function spring(){
+      cancelAnimationFrame(raf); var last = performance.now(), w = 13;
       if (reduce) { s = 0; pull = 0; paint(); return; }
       (function step(t){
         var dt = Math.min(.032, (t - last) / 1000); last = t;
-        v += (-w * w * s - 2 * w * v) * dt; s += v * dt; if (s > R * .97) { s = R * .97; v = Math.min(v, 0); }
-        if (s <= .3 && v <= 20) { s = 0; v = 0; pull = 0; paint(); return; }
+        v += (-w * w * s - 2 * w * v) * dt; s += v * dt;
+        if (s <= .3 && Math.abs(v) < 20) { s = 0; pull = 0; paint(); return; }
         pull = unstretch(s); paint(); raf = requestAnimationFrame(step);
       })(last);
     }
     function grab(){ cancelAnimationFrame(raf); v = 0; pull = unstretch(s); }
     function release(){ holding = false; spring(); }
-    // velocidad real del scroll, para saber con cuánta fuerza llega al final
-    var py = window.scrollY, pt = performance.now(), vy = 0, gapT = 0;
-    function quiet(){ clearTimeout(gapT); gapT = setTimeout(function(){ lastD = 0; coast = false; }, 150); } // 150 ms sin golpes: la inercia terminó
-    window.addEventListener('scroll', function(){
-      var t = performance.now(), y = window.scrollY, dt = t - pt;
-      if (dt > 0) vy = dt > 100 ? 0 : vy * .4 + ((y - py) / dt * 1000) * .6;
-      py = y; pt = t;
-      if (!holding && s === 0 && vy > 250 && atEnd()) { coast = true; lastD = 0; quiet(); spring(Math.min(vy, 5200)); }
-    }, { passive: true });
     window.addEventListener('wheel', function(e){
       var d = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
-      quiet();
       if (!(s > 0 || (d > 0 && atEnd()))) { lastD = 0; return; }
       e.preventDefault();
-      // llega con inercia al final: esa velocidad se vuelve estirón y regreso (no se agarra como jalón)
-      if (!holding && s === 0 && vy > 250 && performance.now() - pt < 120) { coast = true; lastD = d; spring(Math.min(vy, 5200)); return; }
-      // mientras rebota por inercia, los golpes que se van apagando son la misma inercia: se ignoran
-      if (coast && !holding && d > 0 && (lastD === 0 || d <= lastD * 1.05)) { lastD = d; return; }
-      if (coast && d > 0) coast = false;
       // la inercia del trackpad llega como golpes cada vez más chicos: eso ya es "soltar"
       if (!holding && d > 0 && d <= lastD * 1.05) { lastD = d; return; }
       decay = (d > 0 && d < lastD) ? decay + 1 : 0; lastD = d;
       if (decay >= 4) { decay = 0; release(); return; }
       if (!holding) { holding = true; grab(); }
       stretch(pull + d * .9);
-      clearTimeout(relT); relT = setTimeout(release, 70);
+      clearTimeout(relT); relT = setTimeout(function(){ lastD = 0; release(); }, 70);
     }, { passive: false });
     var ty = 0, tp = 0, tActive = false;
     window.addEventListener('touchstart', function(e){ tActive = false; ty = e.touches[0].clientY; if (s > 0) { grab(); tActive = true; } tp = pull; }, { passive: true });
