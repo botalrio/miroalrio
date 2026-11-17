@@ -1,5 +1,4 @@
-import os, re, html as H, urllib.request, xml.etree.ElementTree as ET
-from email.utils import parsedate_to_datetime
+import os, html as H
 HERE = os.path.dirname(os.path.abspath(__file__))
 import json
 tears=json.dumps(json.load(open(os.path.join(HERE,'tears.json'))),separators=(',',':'))
@@ -23,35 +22,10 @@ for c,pos,lab,ev,st,mode,big,small,u1,un in T:
       </figure>
 '''
 
-# Periódico: se arma solo desde el RSS de Substack. El más nuevo va primero; el último lugar siempre es "Ver más".
-FEED = 'https://miroalrio.substack.com/feed'
+# Periódico: la lista vive en data/posts.json (el más nuevo primero). Para agregar un artículo, se agrega ahí y se sube.
 OCULTAR = {'ximena-y-jose'}          # slugs de Substack que NO van en el muro
-MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']
-DATA = os.path.join(HERE, 'data', 'posts.json')
-
-def leer_feed():
-    req = urllib.request.Request(FEED, headers={'User-Agent': 'Mozilla/5.0 (miroalrio.com build)'})
-    root = ET.fromstring(urllib.request.urlopen(req, timeout=30).read())
-    out = []
-    for it in root.iter('item'):
-        link = (it.findtext('link') or '').strip()
-        m = re.search(r'/p/([^/?#]+)', link)
-        if not m: continue
-        d = parsedate_to_datetime(it.findtext('pubDate'))
-        out.append({'slug': m.group(1), 'titulo': (it.findtext('title') or '').strip(),
-                    'bajada': (it.findtext('description') or '').strip(), 'iso': d.strftime('%Y-%m-%d'),
-                    'fecha': f'{d.day} de {MESES[d.month-1]} de {d.year}'})
-    out.sort(key=lambda p: p['iso'], reverse=True)
-    return out
-
-try:
-    POSTS = leer_feed()
-    if not POSTS: raise ValueError('feed vacío')
-    json.dump(POSTS, open(DATA, 'w'), ensure_ascii=False, indent=1)
-    print('feed ok:', len(POSTS), 'posts')
-except Exception as e:                 # si Substack no responde, se usa la última lista buena: el sitio nunca se rompe
-    print('feed falló, uso data/posts.json:', e)
-    POSTS = json.load(open(DATA))
+POSTS = json.load(open(os.path.join(HERE, 'data', 'posts.json')))
+POSTS.sort(key=lambda p: p['iso'], reverse=True)
 POSTS = [p for p in POSTS if p['slug'] not in OCULTAR]
 
 SLOTS=15; tor='<i class="tor c"></i>'; posts=''
