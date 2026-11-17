@@ -12,6 +12,6 @@ jobs:
           python-version: '3.12'
       - run: |
           python build.py && cp -r assets _site/
-          pip install playwright==1.48.0 && python -m playwright install --with-deps webkit
+          pip install playwright && python -m playwright install --with-deps webkit
           (cd _site && python -m http.server 8765 &) ; sleep 2
           python pruebas/fps.py
