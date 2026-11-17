@@ -161,7 +161,7 @@ cite::after{content:"";position:absolute;left:-8px;right:-8px;top:-9px;bottom:-9
   .fuentes{columns:1}
 }
 /* Rendimiento: lo que se mueve y lo que lleva filtro de marcador vive en su propia capa del compositor */
-.paper,.stack .sheet,.mk,.mk-sm{will-change:transform}
+/* (sin will-change en textos y hojas: 100+ capas con filtro tiraban el scroll a ~30 fps; GSAP sube la capa solo mientras anima) */
 body::before{will-change:transform}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
