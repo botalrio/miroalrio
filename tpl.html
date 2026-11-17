@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Miro al Río y sonrío</title>
+<meta name="description" content="Miro al Río: arquitectura forense, justicia espacial y territorio, en español.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+html.lenis,html.lenis body{height:auto}
+.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}
+.lenis [data-lenis-prevent],.lenis [data-lenis-prevent-horizontal]{overscroll-behavior:contain}
+
+/* Layout: un muro pintado. Lo escrito va a mano con marcador; lo impreso son hojas clavadas que se arrancan.
+   Escritorio: encabezado, fila de tarjetas y mosaico de 10 hojas (3 chicas, 6 medianas, 1 grande). Un solo tema a propósito. */
+:root{
+  --wall:#b0342e;
+  --wall-deep:#952c26;
+  --zocalo:#1c1210;
+  --marker:#f2ede5;
+  --print:#952c26;
+  --core:#e4ddd0;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --tex:url("assets/pared-a.webp"),url("assets/pared-a.webp"),url("assets/manchas-a.webp");
+  --tex-size:310px auto,475px auto,1500px auto;
+  --tex-pos:0 0,137px 83px,0 0;
+  --t1:18px;--t2:12.5px;--t3:11px;   /* los únicos tres tamaños de texto, fuera de títulos */
+  --gutter:clamp(16px,5vw,64px);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{background:#b0342e}
+body{
+  background-color:var(--wall);
+  background-image:var(--tex);background-size:var(--tex-size);background-position:var(--tex-pos);
+  color:var(--marker);font-family:var(--font);line-height:1.4;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(120% 90% at 15% 0%,rgba(255,240,230,.09),transparent 60%),linear-gradient(to bottom,transparent 55%,rgba(20,6,4,.15))}
+main,header,footer{position:relative;z-index:1}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 var(--gutter)}
+
+/* Marcador: borde irregular + la tinta se salta donde el muro se hunde */
+.mk{filter:url(#mk-lg);-webkit-mask:url("assets/tinta.webp") 0 0/310px;mask:url("assets/tinta.webp") 0 0/310px}
+.mk-sm{filter:url(#mk-sm);-webkit-mask:url("assets/tinta-fina.webp") 0 0/310px;mask:url("assets/tinta-fina.webp") 0 0/310px;-webkit-text-stroke:.3px currentColor}
+.paper .mk,.paper .mk-sm{-webkit-mask:none;mask:none}
+
+.tap{display:inline-block;border-radius:3px;transition:background-color .12s,color .12s;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tap:focus-visible{outline:2px dashed var(--marker);outline-offset:4px}
+.chip{padding:4px 8px;margin:-4px -8px}
+@media (hover:hover){.chip:hover{background-color:var(--marker);color:var(--zocalo);opacity:.72}}
+.chip:active{background-color:var(--marker);color:var(--zocalo);opacity:.72}
+
+/* Encabezado */
+header.wrap{padding-top:clamp(20px,3.6vw,47px);padding-bottom:clamp(36px,5vw,60px)}
+.bar{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:baseline;justify-content:space-between}
+.wordmark{cursor:default;-webkit-user-select:none;user-select:none;font-weight:700;font-size:clamp(20px,2vw,25px);letter-spacing:-.01em;white-space:nowrap}
+.wordmark .a{opacity:.72;font-weight:400;font-size:var(--t2)}
+.wordmark.pie{display:inline-block;font-size:24px;line-height:1.25}
+.wordmark.pie .a{display:block;font-size:var(--t2);margin-top:2px}
+nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 30px}
+nav a{font-weight:600;font-size:var(--t2);letter-spacing:.06em;text-transform:uppercase}
+
+/* Títulos de sección: chicos, como rótulo escrito sobre el muro */
+.sec-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 6px;padding-left:clamp(0px,7vw,96px)}
+.sec-head h2{font-weight:600;font-size:clamp(20px,2vw,22px);letter-spacing:.01em;margin:0}
+.sec-head .par{font-weight:400;font-size:var(--t2);text-decoration:underline;text-underline-offset:3px;opacity:.72}
+.sec-head span.par{text-decoration:none}
+.sec-note{padding-left:clamp(60px,13vw,170px);margin:0 0 clamp(26px,3.4vw,44px);font-size:var(--t2);font-weight:500;opacity:.78}
+
+/* Periódico */
+#periodico{padding-bottom:clamp(64px,8vw,110px)}
+.prensa{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;max-width:1062px;margin:0 auto;position:relative;left:22px}
+.post{position:relative;display:block;aspect-ratio:1;border-radius:0;container-type:inline-size;min-width:0}
+.paper{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;gap:6px;padding:15cqw 9cqw 9cqw;overflow:hidden;
+  background-color:var(--wall-deep);background-image:url("assets/papel-a.webp");background-size:340px;
+  box-shadow:0 1px 1px rgba(0,0,0,.3),0 8px 16px -9px rgba(0,0,0,.6);transform-origin:50% 5%;transition:background-color .12s,color .12s}
+@media (hover:hover){a.post:hover .paper{background-color:var(--marker);color:var(--zocalo)}}
+a.post:active .paper{background-color:var(--marker);color:var(--zocalo)}
+.post h3,.post p{display:block}
+.post h3{font-weight:700;font-size:var(--t1);line-height:1.14;letter-spacing:-.01em;margin:0 0 .35em}
+.post .dek{font-weight:600;font-size:var(--t2);line-height:1.28;margin:0;opacity:.9}
+.post time{font-weight:600;font-size:var(--t3);opacity:.75}
+.post.more .paper{justify-content:flex-end}
+.post.more span{font-weight:700;font-size:var(--t2);letter-spacing:.04em}
+.post .tor{top:max(6px,4.5cqw)}
+
+/* Galería: mosaico */
+#galeria{padding-bottom:clamp(50px,6vw,80px)}
+.mosaic{display:grid;gap:10px;grid-template-columns:118fr 179fr 179fr 179fr 367fr;grid-template-rows:repeat(6,1fr);
+  aspect-ratio:1062/489;max-width:1062px;margin:calc(clamp(26px,3.4vw,44px) + 52px) auto calc(52px + clamp(56px,7vw,96px));padding:0;position:relative;left:22px}
+.tile{margin:0;position:relative;min-width:0;min-height:0}
+.s1{grid-area:1/1/3/2}.s2{grid-area:3/1/5/2}.s3{grid-area:5/1/7/2}
+.m1{grid-area:1/2/4/3}.m2{grid-area:1/3/4/4}.m3{grid-area:1/4/4/5}
+.m4{grid-area:4/2/7/3}.m5{grid-area:4/3/7/4}.m6{grid-area:4/4/7/5}
+.lg{grid-area:1/5/7/6}
+.tile figcaption{position:absolute;font-size:var(--t2);font-weight:500;line-height:1.4;letter-spacing:.01em;opacity:.85;text-align:right;white-space:nowrap}
+.lab-top figcaption{bottom:calc(100% + 10px);right:6px}
+.lab-bottom figcaption{top:calc(100% + 10px);right:6px}
+.lab-left figcaption{right:calc(100% + 10px);bottom:4px;writing-mode:vertical-rl;transform:rotate(180deg);text-align:left}
+
+.stack{position:absolute;inset:0;container-type:inline-size;display:block;border-radius:0}
+.sheet{position:absolute;inset:0;transform-origin:50% 5%;padding:9cqw;display:flex;flex-direction:column;justify-content:flex-end;gap:.3em;
+  background:var(--print);color:var(--marker);box-shadow:0 1px 1px rgba(0,0,0,.3),0 9px 18px -9px rgba(0,0,0,.6)}
+.sheet::after{content:"";position:absolute;inset:0;pointer-events:none;background:url("assets/papel-a.webp");background-size:340px}
+.sheet.under{transform:rotate(-.7deg) translate(2px,2px);filter:brightness(.9)}
+.sheet .small{font-weight:600;font-size:var(--t3);letter-spacing:.05em;text-transform:uppercase;opacity:.6;position:relative;order:2}
+.sheet .num{font-weight:800;font-size:21cqw;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;position:relative;white-space:nowrap}
+.stack[data-mode="slow"] .small{order:0}
+.sheet .fila{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.5em;row-gap:.15em;position:relative}
+.sheet .unidad{order:0;white-space:nowrap}
+.tor{position:absolute;top:max(6px,4cqw);width:11px;height:11px;z-index:30;pointer-events:none;filter:drop-shadow(1px 1.5px 1px rgba(0,0,0,.6));background:center/contain no-repeat}
+.tor.n1{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3CradialGradient id='g' cx='42%25' cy='36%25' r='70%25'%3E%3Cstop offset='0' stop-color='%23b4b0a8'/%3E%3Cstop offset='.45' stop-color='%23827e76'/%3E%3Cstop offset='.82' stop-color='%23565249'/%3E%3Cstop offset='1' stop-color='%232f2c28'/%3E%3C/radialGradient%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .12  0 0 0 0 .1  0 0 0 0 .08  0 0 0 -1.5 .95'/%3E%3CfeComposite in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3Cfilter id='r' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.35' numOctaves='2' seed='12'/%3E%3CfeColorMatrix values='0 0 0 0 .5  0 0 0 0 .25  0 0 0 0 .1  0 0 0 -2.2 1.05'/%3E%3CfeComposite in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3C/defs%3E%3Cpath id='h' d='M12 1.6c3.1-.2 6 1.2 8 3.6 1.9 2.3 2.7 5.2 2.2 8.1-.5 3-2.3 5.6-4.9 7.2-2.5 1.5-5.5 2-8.3 1.2-2.9-.8-5.3-2.9-6.6-5.6C1.200 13.500 1.100 10.400 2.300 7.700 3.500 5 5.800 2.900 8.600 2c1.100-.3 2.200-.4 3.400-.4z' fill='url(%23g)' stroke='%23231f1c' stroke-width='1'/%3E%3Cuse href='%23h' filter='url(%23n)'/%3E%3Cuse href='%23h' filter='url(%23r)'/%3E%3Cpath d='M7 10.500l4.600 1.300M14 7.200l2.400 3.600M9.500 16l5-.6' stroke='rgba(20,18,16,.45)' stroke-width='.7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M6.200 8.400c1.200-1.900 3-3.100 5.200-3.400' stroke='rgba(255,255,255,.3)' stroke-width='1.1' stroke-linecap='round' fill='none'/%3E%3C/svg%3E")}
+.tor.n2{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3CradialGradient id='g' cx='42%25' cy='36%25' r='70%25'%3E%3Cstop offset='0' stop-color='%23b4b0a8'/%3E%3Cstop offset='.45' stop-color='%23827e76'/%3E%3Cstop offset='.82' stop-color='%23565249'/%3E%3Cstop offset='1' stop-color='%232f2c28'/%3E%3C/radialGradient%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 .12  0 0 0 0 .1  0 0 0 0 .08  0 0 0 -1.5 .95'/%3E%3CfeComposite in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3Cfilter id='r' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.35' numOctaves='2' seed='20'/%3E%3CfeColorMatrix values='0 0 0 0 .5  0 0 0 0 .25  0 0 0 0 .1  0 0 0 -2.2 1.2'/%3E%3CfeComposite in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3C/defs%3E%3Cpath id='h' d='M12 1.6c3.1-.2 6 1.2 8 3.6 1.9 2.3 2.7 5.2 2.2 8.1-.5 3-2.3 5.6-4.9 7.2-2.5 1.5-5.5 2-8.3 1.2-2.9-.8-5.3-2.9-6.6-5.6C1.200 13.500 1.100 10.400 2.300 7.700 3.500 5 5.800 2.900 8.600 2c1.100-.3 2.200-.4 3.400-.4z' fill='url(%23g)' stroke='%23231f1c' stroke-width='1'/%3E%3Cuse href='%23h' filter='url(%23n)'/%3E%3Cuse href='%23h' filter='url(%23r)'/%3E%3Cpath d='M6.500 13l6-2.200M13 15.600l3.200-2.400M10 6.800l1.800 2.200' stroke='rgba(20,18,16,.45)' stroke-width='.7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M6.200 8.400c1.200-1.900 3-3.100 5.200-3.400' stroke='rgba(255,255,255,.3)' stroke-width='1.1' stroke-linecap='round' fill='none'/%3E%3C/svg%3E")}
+.tor.n3{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cdefs%3E%3CradialGradient id='g' cx='42%25' cy='36%25' r='70%25'%3E%3Cstop offset='0' stop-color='%23b4b0a8'/%3E%3Cstop offset='.45' stop-color='%23827e76'/%3E%3Cstop offset='.82' stop-color='%23565249'/%3E%3Cstop offset='1' stop-color='%232f2c28'/%3E%3C/radialGradient%3E%3Cfilter id='n' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='27'/%3E%3CfeColorMatrix values='0 0 0 0 .12  0 0 0 0 .1  0 0 0 0 .08  0 0 0 -1.5 .95'/%3E%3CfeComposite in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3Cfilter id='r' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.35' numOctaves='2' seed='36'/%3E%3CfeColorMatrix values='0 0 0 0 .5  0 0 0 0 .25  0 0 0 0 .1  0 0 0 -2.2 0.95'/%3E%3CfeComposite in2='SourceGraphic' operator='in'/%3E%3C/filter%3E%3C/defs%3E%3Cpath id='h' d='M12 1.6c3.1-.2 6 1.2 8 3.6 1.9 2.3 2.7 5.2 2.2 8.1-.5 3-2.3 5.6-4.9 7.2-2.5 1.5-5.5 2-8.3 1.2-2.9-.8-5.3-2.9-6.6-5.6C1.200 13.500 1.100 10.400 2.300 7.700 3.500 5 5.800 2.900 8.600 2c1.100-.3 2.200-.4 3.400-.4z' fill='url(%23g)' stroke='%23231f1c' stroke-width='1'/%3E%3Cuse href='%23h' filter='url(%23n)'/%3E%3Cuse href='%23h' filter='url(%23r)'/%3E%3Cpath d='M8 8l7 6.400M15.500 8.600l-2.200 2.600M7.200 15l3.400.8' stroke='rgba(20,18,16,.45)' stroke-width='.7' stroke-linecap='round' fill='none'/%3E%3Cpath d='M6.200 8.400c1.200-1.900 3-3.100 5.200-3.400' stroke='rgba(255,255,255,.3)' stroke-width='1.1' stroke-linecap='round' fill='none'/%3E%3C/svg%3E")}
+/* el martillazo hunde un poco el papel alrededor del clavo */
+.tor::before{content:"";position:absolute;inset:-4px;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,rgba(0,0,0,.16) 0 30%,rgba(0,0,0,.05) 46%,rgba(255,255,255,.025) 60%,transparent 70%)}
+.tor.c{left:calc(50% - 6px)}
+/* Pila: las hojas de atrás asoman, abanicadas sobre el clavo */
+.ply{position:absolute;inset:0;transform-origin:50% 5%;pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.4);background:var(--print)}
+.post .ply{background:var(--wall-deep)}
+.post .paper{z-index:2}
+.post .scrap{z-index:3}
+.scrap,.falling,.core{position:absolute;inset:0;pointer-events:none}
+.core{background:#bd6860}
+.falling{inset:auto;container-type:inline-size;will-change:transform}
+#caidas{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1000}
+.falling .sheet,.scrap .sheet{box-shadow:none}
+.scrap{filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+
+.fuentes{max-width:1062px;margin:0 auto;font-size:var(--t3);line-height:1.6;opacity:.5;columns:2;column-gap:36px}
+.fuentes p{margin:0 0 6px;break-inside:avoid}
+.fuentes b{font-weight:700}
+
+/* Cierre del muro: frase a marcador y, abajo, zócalo de piedra clara con banqueta */
+.cierre{padding:clamp(30px,5vw,60px) var(--gutter) clamp(40px,5vw,64px);text-align:center}
+.zocalo{height:301px;background:url("assets/zocalo.webp") 50% 100%/auto 100% repeat-x;box-shadow:0 -5px 9px -3px rgba(0,0,0,.4)}
+blockquote{margin:0 auto 10px;max-width:70ch;font-size:var(--t2);font-weight:500;line-height:1.5;letter-spacing:.02em;opacity:.9}
+cite{display:block;width:fit-content;margin:0 auto 26px;position:relative;font-style:normal;font-size:var(--t3);opacity:.5}
+/* tachado a mano, como el de Banksy: varias pasadas de la misma raya, de ida y vuelta */
+cite::after{content:"";position:absolute;left:-8px;right:-8px;top:-9px;bottom:-9px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23f2ede5' stroke-width='.85' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.4 21.2 C88.7 22.3 216.5 6.1 293.2 6.6 C207.0 7.6 72.5 20.5 0.6 20.9 C93.7 16.6 217.9 27.4 297.8 23.6 C212.2 20.6 77.9 24.6 8.8 26.7 C90.9 27.2 221.9 5.9 286.1 10.0 C195.4 10.7 68.7 22.3 2.6 26.2 C85.6 30.5 213.3 4.5 290.7 5.8' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M4.5 18.4 C90.0 23.0 226.3 28.8 296.1 32.6 C204.1 33.2 75.2 3.5 2.4 6.6 C86.4 5.8 220.4 8.8 297.7 11.1 C217.7 8.3 84.8 30.8 15.5 27.3 C96.3 24.9 229.3 8.7 296.3 10.4 C205.3 11.4 75.0 35.6 3.3 36.1 C97.1 32.9 222.7 23.7 301.3 19.6 C220.0 16.6 90.3 41.0 12.7 37.2' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M3.2 18.4 C87.3 17.6 221.5 37.1 287.7 37.2 C199.1 37.0 79.3 31.5 7.4 30.3 C94.3 26.0 216.2 10.6 287.2 13.1 C206.4 9.0 66.6 14.3 -1.2 14.8 C91.9 15.7 223.3 25.3 291.3 25.6 C200.1 21.3 73.9 1.6 4.4 5.2' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M36.7 2.9 Q52.3 27.0 96.1 33.0' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M241.6 0.7 Q263.7 13.2 305.9 39.6' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M27.0 0.1 Q51.9 18.1 57.5 32.6' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M40.8 2.1 Q62.1 17.3 108.2 37.6' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E") center/100% 100% no-repeat}
+
+
+@media (max-width:760px){
+  .sec-head h2{font-size:34px;font-weight:800}
+  .mosaic{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:none;aspect-ratio:auto;gap:26px 14px;left:0;margin:28px 0 40px}
+  .tile{grid-area:auto!important;display:flex;flex-direction:column;justify-content:flex-end;gap:8px}
+  .tile.lg{grid-column:1/-1!important}
+  .tile figcaption{position:static;writing-mode:horizontal-tb;transform:none;text-align:left;white-space:normal}
+  .tile figcaption br{display:none}
+  .stack{position:relative;inset:auto;aspect-ratio:3/4;width:100%}
+  .prensa{grid-template-columns:1fr 1fr;left:0;gap:14px}
+  .post.vacia{display:none}
+  .tile.lg .stack{aspect-ratio:4/3}
+  .tile.lg .sheet .num{font-size:15cqw}
+  .fuentes{columns:1}
+}
+/* Rendimiento: lo que se mueve y lo que lleva filtro de marcador vive en su propia capa del compositor */
+.paper,.stack .sheet,.mk,.mk-sm,.ply{will-change:transform}
+body::before{will-change:transform}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="bar">
+    <span class="wordmark" id="inicio"><span class="mk">MIRO AL RÍO <span class="a">(Y SONRÍO)</span></span></span>
+    <nav aria-label="Principal">
+      <ul>
+        <li><a class="tap chip" href="https://linktr.ee/miroalrio"><span class="mk-sm jitw">Linktree</span></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="periodico" class="wrap" aria-labelledby="t-periodico">
+    <div class="sec-head mk">
+      <h2 id="t-periodico" class="jit">PERIÓDICO</h2>
+      <a class="par tap chip" href="https://miroalrio.substack.com/">(COLUMNA)</a>
+    </div>
+    <p class="sec-note mk-sm jitw">Substack</p>
+    <div class="prensa">
+<!--POSTS-->    </div>
+  </section>
+
+  <section id="galeria" class="wrap" aria-labelledby="t-galeria">
+    <div class="sec-head mk">
+      <h2 id="t-galeria" class="jit">GALERÍA</h2>
+      <span class="par">(¿CADA CUÁNTO TIEMPO?)</span>
+    </div>
+    <p class="sec-note mk-sm jitw">Temporizadores: cuentan desde las 00:00 de hoy, hora del centro de México</p>
+
+    <div class="mosaic">
+<!--TILES-->    </div>
+
+    <div class="fuentes mk-sm jitw">
+      <p><b>Violencia sexual contra menores (México):</b> 9,802 personas de 1 a 17 años atendidas en hospitales en 2023. Secretaría de Salud, registros de lesiones, procesados por REDIM. Solo cuenta casos que llegaron a un hospital.</p>
+      <p><b>Desaparición (México):</b> en 2025 se registraron 33,595 reportes de personas desaparecidas; 13,814 siguen sin ser localizadas. Registro Nacional de Personas Desaparecidas y No Localizadas, corte a diciembre de 2025.</p>
+      <p><b>Niñas madres (México):</b> 7,975 nacimientos de madres de 10 a 14 años en 2024. Secretaría de Salud, datos abiertos de nacimientos.</p>
+      <p><b>Basura (México):</b> 139,902 toneladas diarias de residuos sólidos urbanos. SEMARNAT, Diagnóstico Básico para la Gestión Integral de los Residuos 2026.</p>
+      <p><b>Homicidio (México):</b> 29,488 defunciones por homicidio registradas en 2025. INEGI, Estadísticas de Defunciones Registradas.</p>
+      <p><b>Suicidio (México):</b> 8,856 defunciones en 2024. INEGI, Estadísticas de Defunciones Registradas.</p>
+      <p><b>Cobertura arbórea (México):</b> 330,821 hectáreas perdidas en 2024, la mayor parte por incendios. Global Forest Watch / Universidad de Maryland.</p>
+      <p><b>Mujeres asesinadas (México):</b> 7.67 víctimas diarias de feminicidio y homicidio doloso en 2025. SESNSP. Solo cuenta lo que llegó a una carpeta de investigación.</p>
+      <p><b>Violación (México):</b> 10,457 mujeres y niñas víctimas en carpetas de investigación, enero a junio de 2025. SESNSP. Solo cuenta lo denunciado.</p>
+      <p><b>Abandono escolar (México):</b> cerca de 430 mil jóvenes dejaron el bachillerato en el ciclo 2023-2024 (tasa de 8.1 %). Cifras de la SEP citadas por académicos de la Ibero.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="cierre">
+    <blockquote class="mk-sm jitw">“Los filósofos no han hecho más que interpretar de diversos modos el mundo, pero de lo que se trata es de transformarlo.”</blockquote>
+    <cite class="mk-sm jitw">Karl Marx, Tesis sobre Feuerbach (1845)</cite>
+    <span class="wordmark pie"><span class="mk">MIRO AL RÍO <span class="a">(Y SONRÍO)</span></span></span>
+  </div>
+  <div class="zocalo"></div>
+</footer>
+<div id="caidas" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="mk-lg" x="-4%" y="-8%" width="108%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="hand"/>
+      <feDisplacementMap in="SourceGraphic" in2="hand" scale="3" xChannelSelector="R" yChannelSelector="G" result="w1"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="1" seed="9" result="edge"/>
+      <feDisplacementMap in="w1" in2="edge" scale="1.3" xChannelSelector="R" yChannelSelector="G" result="w2"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.02 0.05" numOctaves="2" seed="11" result="ink"/>
+      <feColorMatrix in="ink" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.32 1.1" result="density"/>
+      <feComposite in="w2" in2="density" operator="in"/>
+    </filter>
+    <filter id="mk-sm" x="-4%" y="-10%" width="108%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="1" seed="7" result="edge"/>
+      <feDisplacementMap in="SourceGraphic" in2="edge" scale="0.9" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/Physics2DPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.min.js"></script>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasGsap = typeof gsap !== 'undefined';
+  if (hasGsap) gsap.registerPlugin(Physics2DPlugin, SplitText);
+  function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+  var lenis = null;
+  if (!reduce && typeof Lenis !== 'undefined') { try { lenis = new Lenis({ autoRaf: true, lerp: 0.12, anchors: true }); } catch (e) {} }
+
+  // La página descansa con el zócalo asomando. Se puede jalar más abajo, pero el muro empuja de regreso
+  // en cada cuadro: en cuanto se suelta, vuelve suave y sin espera.
+  (function(){
+    var zoc = document.querySelector('.zocalo'), touching = false, L = 0, running = false;
+    function measure(){ L = zoc.getBoundingClientRect().top + window.scrollY + 80 - window.innerHeight; }
+    measure();
+    window.addEventListener('resize', measure);
+    window.addEventListener('load', measure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    function push(){
+      var y = window.scrollY;
+      if (L > 0 && y > L + .5 && !touching) {
+        var ny = L + (y - L) * (reduce ? 0 : .92);
+        if (ny - L < .6) ny = L;
+        if (lenis) lenis.scrollTo(ny, { immediate: true, force: true }); else window.scrollTo(0, ny);
+        requestAnimationFrame(push);
+      } else running = false;
+    }
+    function kick(){ if (!running && !touching && window.scrollY > L + .5) { running = true; requestAnimationFrame(push); } }
+    window.addEventListener('scroll', kick, { passive: true });
+    window.addEventListener('wheel', kick, { passive: true });
+    window.addEventListener('touchstart', function(){ touching = true; }, { passive: true });
+    ['touchend','touchcancel'].forEach(function(ev){ window.addEventListener(ev, function(){ touching = false; kick(); }, { passive: true }); });
+  })();
+
+  function handLetter(){
+    if (!hasGsap) return;
+    var r = rng(1845);
+    document.querySelectorAll('.jit').forEach(function(el){
+      var split = SplitText.create(el, { type: 'words,chars', aria: 'auto' });
+      split.chars.forEach(function(c){ gsap.set(c, { rotation: (r()-.5)*3.2, y: (r()-.5)*1.5, display: 'inline-block' }); });
+    });
+  }
+  function handWords(){
+    if (!hasGsap) return;
+    var r = rng(77);
+    document.querySelectorAll('.jitw, .tile figcaption').forEach(function(el){
+      var split = SplitText.create(el, { type: 'words', aria: 'auto' });
+      split.words.forEach(function(c){ gsap.set(c, { rotation: (r()-.5)*2.4, y: (r()-.5)*1.6, display: 'inline-block' }); });
+    });
+    document.querySelectorAll('.tor').forEach(function(t){ t.classList.add('n' + (1 + Math.floor(r()*3))); t.style.transform = 'rotate(' + Math.floor(r()*360) + 'deg)'; });
+  }
+  var _hl = handLetter; handLetter = function(){ _hl(); handWords(); };
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(handLetter); else handLetter();
+
+  if (hasGsap) {
+    document.querySelectorAll('.tap').forEach(function(el){
+      if (el.classList.contains('post')) el = el.querySelector('.paper').parentNode;
+      el.addEventListener('pointerdown', function(){ gsap.to(el, { scale: .955, y: 2, duration: .08, ease: 'power2.out', overwrite: 'auto' }); });
+      ['pointerup','pointerleave','pointercancel'].forEach(function(ev){
+        el.addEventListener(ev, function(){ gsap.to(el, { scale: 1, y: 0, duration: .45, ease: 'back.out(3)', overwrite: 'auto' }); });
+      });
+    });
+  }
+
+  // Al pasar el cursor, un soplo: una sola vez y rápido.
+  // Con dos tornillos la hoja se levanta de abajo (se ve un poco más corta); con uno, se mece sobre el tornillo.
+  function lift(el){
+    if (!hasGsap || reduce) return;
+    gsap.killTweensOf(el, 'scaleY');
+    gsap.timeline().to(el, { scaleY: .972, duration: .16, ease: 'sine.out' }).to(el, { scaleY: 1, duration: .34, ease: 'sine.inOut' });
+  }
+  function sway(els, dir){
+    if (!hasGsap || reduce) return;
+    gsap.killTweensOf(els, 'rotation');
+    gsap.timeline().to(els, { rotation: 1.7 * dir, duration: .17, ease: 'sine.out' }).to(els, { rotation: 0, duration: .38, ease: 'sine.inOut' });
+  }
+  document.querySelectorAll('.post').forEach(function(p){ p.addEventListener('pointerenter', function(e){ var rc = p.getBoundingClientRect(); sway(p.querySelector('.paper'), e.clientX < rc.left + rc.width / 2 ? 1 : -1); }); });
+  document.querySelectorAll('.stack').forEach(function(st){
+    st.addEventListener('pointerenter', function(e){
+      var rc = st.getBoundingClientRect();
+      sway(st.querySelectorAll('.sheet:not(.under)'), e.clientX < rc.left + rc.width / 2 ? 1 : -1);
+    });
+  });
+
+  // ---------- Pilas: cada lugar tiene varias hojas colgadas; cada arrancón deja una menos (nunca menos de dos atrás)
+  var pr = rng(2026);
+  function addPlies(box, n){
+    var first = box.firstChild;
+    for (var i = n; i >= 1; i--) {
+      var el = document.createElement('i'); el.className = 'ply';
+      var ang = (i % 2 ? -1 : 1) * (.5 + i * .42 + pr() * .5) * (pr() < .2 ? -1 : 1);
+      el.style.transform = 'rotate(' + ang.toFixed(2) + 'deg) translate(' + ((pr()-.5)*3).toFixed(1) + 'px,' + (pr()*2).toFixed(1) + 'px)';
+      var br = .78 + pr() * .2, base = box.classList.contains('post') ? [149,44,38] : [149,44,38];
+      el.style.background = 'rgb(' + base.map(function(c){ return Math.round(c * br); }).join(',') + ')';
+      el.style.zIndex = 1;
+      box.insertBefore(el, first);
+    }
+  }
+  function dropPly(box){
+    var pl = box.querySelectorAll('.ply');
+    if (pl.length > 2) { var el = pl[pl.length - 1]; if (hasGsap && !reduce) gsap.to(el, { autoAlpha: 0, duration: .25, delay: .2, onComplete: function(){ el.remove(); } }); else el.remove(); }
+  }
+  document.querySelectorAll('.stack').forEach(function(b){ addPlies(b, 3 + Math.floor(pr() * 3)); });
+  document.querySelectorAll('a.post').forEach(function(b){ addPlies(b, 5 + Math.floor(pr() * 2)); });
+  document.querySelectorAll('.post.vacia').forEach(function(b){ addPlies(b, pr() < .45 ? 1 : 0); });
+
+  // ---------- Hojas que se arrancan ----------
+  // Contornos reales: trazados de las esquinas que Alejandro rompió a mano y fotografió.
+  var TEARS = /*TEARS*/.map(function(p){
+    var q = p.filter(function(a){ return a[0] > .02 && a[1] > .02; });
+    var m = Math.max.apply(null, q.map(function(a){ return Math.max(a[0], a[1]); }));
+    q = q.map(function(a){ return [a[0]/m, a[1]/m]; });
+    return [[0, q[0][1]]].concat(q).concat([[q[q.length-1][0], 0]]);
+  });
+  // Cartera de roturas: 4 contornos reales x 2 orientaciones x 3 tamaños x estiramiento y temblor propios.
+  // Ninguna hoja rompe igual que otra.
+  var SIZES = [.17, .235, .31];
+  function rip(avoid){
+    var i; do { i = Math.floor(Math.random()*TEARS.length); } while (i === avoid);
+    var prof = TEARS[i];
+    if (Math.random() < .5) prof = prof.map(function(a){ return [a[1], a[0]]; }).reverse();
+    var sx = .78 + Math.random()*.5, sy = .78 + Math.random()*.5, n = prof.length;
+    var size = SIZES[Math.floor(Math.random()*3)] * (.92 + Math.random()*.16);
+    var pts = prof.map(function(a, k){
+      var j = (k === 0 || k === n-1) ? 0 : .014;
+      return [Math.max(0, a[0]*sx + (Math.random()-.5)*j), Math.max(0, a[1]*sy + (Math.random()-.5)*j)];
+    });
+    return { pts: pts, size: size, base: i };
+  }
+  var fmt = new Intl.NumberFormat('es-MX', { maximumFractionDigits: 0 });
+  function poly(pts){ return 'polygon(' + pts.map(function(p){ return p[0].toFixed(1)+'px '+p[1].toFixed(1)+'px'; }).join(',') + ')'; }
+
+  function makeSheet(stack, n){
+    var d = stack.dataset, s = document.createElement('div');
+    s.className = 'sheet';
+    var big = d.mode === 'count' ? fmt.format(n * parseFloat(d.step)) : d.big;
+    var num = document.createElement('span'); num.className = 'num'; num.textContent = big;
+    if (big.length > 5) num.style.fontSize = Math.max(9, 108 / big.length) + 'cqw';
+    var sm = document.createElement('span'); sm.className = 'small'; sm.textContent = d.small ? '(' + d.small + ')' : '';
+    if (d.mode === 'count' && d.un) {                     // la unidad, en chiquito al lado del número
+      var row = document.createElement('span'); row.className = 'fila';
+      var u = document.createElement('span'); u.className = 'small unidad';
+      u.textContent = (n * parseFloat(d.step) === 1) ? d.u1 : d.un;
+      row.appendChild(num); row.appendChild(u); s.appendChild(row);
+    } else s.appendChild(num);
+    s.appendChild(sm);
+    return s;
+  }
+
+  // Rastro de pedazos bajo el clavo: el nuevo entra detrás de los que ya estaban (era la hoja de abajo),
+  // con un leve giro distinto alrededor del clavo para que se asomen los bordes. Como en una pared real, nunca desaparecen:
+  // a partir del 6.º, el pedazo nuevo quedaría tapado por los de enfrente, así que ya no se crea (cero costo extra).
+  var MAXSCRAPS = 6;
+  function addScrap(box, sc, fallback){
+    var nail = box.querySelector('.tor'), first = box.querySelector('.scrap');
+    sc.style.transformOrigin = '50% ' + (nail ? nail.offsetTop + 5.5 : 10) + 'px';
+    sc.style.transform = 'rotate(' + ((Math.random() - .5) * 6).toFixed(2) + 'deg)';
+    if (box.querySelectorAll('.scrap').length >= MAXSCRAPS) return;
+    if (box.classList.contains('stack')) sc.querySelectorAll('.sheet > *').forEach(function(n){ n.remove(); }); // en la galería el texto nunca cae en el pedazo: fuera, más ligero
+    box.insertBefore(sc, first || fallback);
+  }
+  function tear(stack, oldSheet, still){
+    var r = Math.random, rc = stack.getBoundingClientRect(), W = rc.width, H = rc.height;
+    function shift(pts, dx, dy){ return pts.map(function(p){ return [p[0]+dx, p[1]+dy]; }); }
+    var ra = rip(-1), rb = rip(ra.base), A = ra.pts, B = rb.pts, cx = W / 2 + (r()-.5) * W * .04, sz = Math.min(W, H) * ra.size, kb = A[0][1] / B[0][1];
+    var left = A.map(function(a){ return [cx - a[0]*sz, a[1]*sz]; }).reverse();          // del borde superior izquierdo hacia abajo
+    var right = B.map(function(a){ return [cx + a[0]*sz*kb, a[1]*sz*kb]; });             // de abajo al borde superior derecho
+    var tab = left.concat(right);
+    var e = Math.max(1, W * .006);
+    var bodyPts = [[0,0]].concat(tab).concat([[W,0],[W,H],[0,H]]);
+    var bodyCore = [[0,0]].concat(shift(tab,0,-e)).concat([[W,0],[W,H],[0,H]]);
+
+    function piece(pts, corePts, cls){
+      var w = document.createElement('div'); w.className = cls;
+      var c = document.createElement('div'); c.className = 'core'; c.style.clipPath = poly(corePts);
+      var sh = oldSheet.cloneNode(true); sh.classList.remove('under'); sh.style.zIndex = ''; sh.style.clipPath = poly(pts);
+      w.appendChild(c); w.appendChild(sh); return w;
+    }
+    var sc = piece(tab, shift(tab,0,e), 'scrap'); sc.style.zIndex = 20;
+    var body = piece(bodyPts, bodyCore, 'falling');
+    body.style.left = rc.left + 'px'; body.style.top = rc.top + 'px'; body.style.width = W + 'px'; body.style.height = H + 'px';
+    addScrap(stack, sc, null);
+    oldSheet.remove();
+    if (still || reduce || !hasGsap) return;
+    document.getElementById('caidas').appendChild(body);
+
+    var leftFirst = r() < .5;
+    gsap.set(body, { transformOrigin: '50% 4%' });
+    gsap.timeline({ onComplete: function(){ body.remove(); } })
+      .to(body, { rotation: (leftFirst ? -1 : 1) * (3 + r()*4), duration: .16, ease: 'power2.in' })
+      .to(body, { physics2D: { velocity: 80 + r()*80, angle: 85 + (r()-.5)*24, gravity: 2300 },
+                  rotation: '+=' + ((leftFirst ? -1 : 1) * (20 + r()*40)), duration: 1.5, ease: 'none' });
+  }
+
+  // Periódico: al hacer clic, la hoja se arranca de sus dos tornillos (cada esquina rompe distinto), cae,
+  // y cuando ha bajado un tercio de su altura se abre el enlace: te la llevas para leerla. Debajo queda otra hoja igual.
+  function tearPost(post, onThird){
+    var paper = post.querySelector('.paper'), r = Math.random, W = post.clientWidth, H = post.clientHeight;
+    function shift(pts, dx, dy){ return pts.map(function(q){ return [q[0]+dx, q[1]+dy]; }); }
+    var ra = rip(-1), rb = rip(ra.base), A = ra.pts, B = rb.pts, cx = W / 2 + (r()-.5) * W * .04, sz = W * ra.size * .62, kb = A[0][1] / B[0][1];
+    var left = A.map(function(a){ return [cx - a[0]*sz, a[1]*sz]; }).reverse();
+    var right = B.map(function(a){ return [cx + a[0]*sz*kb, a[1]*sz*kb]; });
+    var tab = left.concat(right), e = Math.max(1, W * .006);
+    function piece(pts, corePts, cls){
+      var w = document.createElement('div'); w.className = cls;
+      var c = document.createElement('div'); c.className = 'core'; c.style.clipPath = poly(corePts);
+      var sh = paper.cloneNode(true); sh.style.transform = 'none'; sh.style.clipPath = poly(pts);
+      w.appendChild(c); w.appendChild(sh); return w;
+    }
+    var sc = piece(tab, shift(tab,0,e), 'scrap');
+    var body = piece([[0,0]].concat(tab).concat([[W,0],[W,H],[0,H]]), [[0,0]].concat(shift(tab,0,-e)).concat([[W,0],[W,H],[0,H]]), 'falling post');
+    var rc = post.getBoundingClientRect();
+    body.style.left = rc.left + 'px'; body.style.top = rc.top + 'px'; body.style.width = W + 'px'; body.style.height = H + 'px';
+    var tor = post.querySelector('.tor');
+    addScrap(post, sc, tor); dropPly(post);
+    document.getElementById('caidas').appendChild(body);
+    var leftFirst = r() < .5;
+    gsap.set(body, { transformOrigin: '50% 4%' });
+    gsap.timeline({ onComplete: function(){
+        body.remove();
+        post._torn = false;
+      } })
+      .to(body, { rotation: (leftFirst ? -1 : 1) * (3 + r()*4), duration: .16, ease: 'power2.in' })
+      .to(body, { physics2D: { velocity: 80 + r()*80, angle: 85 + (r()-.5)*24, gravity: 2300 },
+                  rotation: '+=' + ((leftFirst ? -1 : 1) * (20 + r()*40)), duration: 1.5, ease: 'none',
+                  onUpdate: function(){ if (onThird && gsap.getProperty(body, 'y') >= H / 3) { var f = onThird; onThird = null; f(); } } });
+  }
+  // Las hojas no llevan href: así el visor no abre el enlace al instante. Se abre a mano, a mitad de la caída.
+  function go(url){
+    var a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    a.style.display = 'none'; document.body.appendChild(a); a.click(); a.remove();
+  }
+  document.querySelectorAll('a.post').forEach(function(post){
+    var url = post.dataset.href;
+    function open(ev){
+      if (ev) ev.preventDefault();
+      if (!hasGsap || reduce) { go(url); return; }
+      if (post._torn) return;
+      post._torn = true;
+      tearPost(post, function(){ go(url); });
+    }
+    post.addEventListener('click', open);
+    post.addEventListener('keydown', function(ev){ if (ev.key === 'Enter' || ev.key === ' ') open(ev); });
+  });
+
+  // Los contadores corren desde la medianoche de hoy en la Ciudad de México, no desde que se abrió la página.
+  var TZ = 'America/Mexico_City';
+  var tzParts = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour12: false, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  var dayStart = 0, dayChecked = 0;
+  function syncDay(){
+    var now = Date.now(), o = {};
+    tzParts.formatToParts(new Date(now)).forEach(function(p){ o[p.type] = p.value; });
+    var secs = (parseInt(o.hour, 10) % 24) * 3600 + parseInt(o.minute, 10) * 60 + parseInt(o.second, 10) + (now % 1000) / 1000;
+    dayStart = now - secs * 1000; dayChecked = now;
+  }
+  function secondsSinceMidnightMX(){
+    var now = Date.now();
+    if (now - dayChecked > 60000 || now < dayStart) syncDay();
+    var s = (now - dayStart) / 1000;
+    if (s >= 86400) { syncDay(); s = (now - dayStart) / 1000; }
+    return s;
+  }
+  syncDay();
+  var ticks = [];
+  setInterval(function(){ var sec = secondsSinceMidnightMX(); for (var i = 0; i < ticks.length; i++) ticks[i](sec); }, 200);
+  document.querySelectorAll('.stack').forEach(function(stack){
+    var d = stack.dataset, every = parseFloat(d.every), nail = stack.querySelector('.tor');
+    var k = d.mode === 'static' ? 0 : Math.floor(secondsSinceMidnightMX() / every), visible = true;
+    var top = makeSheet(stack, k); top.style.zIndex = 10;
+    var under = makeSheet(stack, k + 1); under.classList.add('under'); under.style.zIndex = 5;
+    stack.insertBefore(under, nail); stack.insertBefore(top, nail);
+    if (d.mode === 'static') return;
+    // Si ya se arrancó alguna hoja hoy, bajo el clavo queda el pedazo roto de la anterior
+    for (var j = Math.max(0, k - MAXSCRAPS); j < k; j++) { var prev = makeSheet(stack, j); prev.style.zIndex = 15; stack.insertBefore(prev, nail); tear(stack, prev, true); }
+    if ('IntersectionObserver' in window) new IntersectionObserver(function(es){ visible = es[0].isIntersecting; }, { threshold: .15 }).observe(stack);
+    ticks.push(function(sec){
+      var target = Math.floor(sec / every);
+      if (target < k) {                                  // pasó la medianoche: el contador vuelve a empezar
+        k = target;
+        var a = makeSheet(stack, k), bn = makeSheet(stack, k + 1);
+        a.style.zIndex = 10; bn.classList.add('under'); bn.style.zIndex = 5;
+        top.replaceWith(a); under.replaceWith(bn); top = a; under = bn;
+        return;
+      }
+      if (target === k) return;
+      var animate = visible && target === k + 1 && !document.hidden;
+      k = target;
+      var next = makeSheet(stack, k + 1); next.classList.add('under'); next.style.zIndex = 4;
+      stack.insertBefore(next, stack.firstChild);
+      var fresh = makeSheet(stack, k); fresh.style.zIndex = 10;
+      stack.insertBefore(fresh, nail); under.remove();
+      var gone = top; top = fresh; under = next;
+      gone.style.zIndex = 15;
+      if (animate) tear(stack, gone); else gone.remove();
+      dropPly(stack);
+    });
+  });
+})();
+</script>
+</body>
+</html>
