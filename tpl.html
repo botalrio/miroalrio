@@ -9,9 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-html.lenis,html.lenis body{height:auto}
-.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}
-.lenis [data-lenis-prevent],.lenis [data-lenis-prevent-horizontal]{overscroll-behavior:contain}
 
 /* Layout: un muro pintado. Lo escrito va a mano con marcador; lo impreso son hojas clavadas que se arrancan.
    Escritorio: encabezado, fila de tarjetas y mosaico de 10 hojas (3 chicas, 6 medianas, 1 grande). Un solo tema a propósito. */
@@ -108,7 +105,8 @@ a.post:active .paper{background-color:var(--marker);color:var(--zocalo)}
 .sheet{position:absolute;inset:0;transform-origin:50% 5%;padding:9cqw;display:flex;flex-direction:column;justify-content:flex-end;gap:.3em;
   background:var(--print);color:var(--marker);box-shadow:0 1px 1px rgba(0,0,0,.3),0 9px 18px -9px rgba(0,0,0,.6)}
 .sheet::after{content:"";position:absolute;inset:0;pointer-events:none;background:url("assets/papel-a.webp");background-size:340px}
-.sheet.under{transform:rotate(-.7deg) translate(2px,2px);filter:brightness(.9)}
+.sheet.under{transform:rotate(-.7deg) translate(2px,2px)}
+.sheet.under::after{background:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1)),url("assets/papel-a.webp");background-size:auto,340px}
 .sheet .small{font-weight:600;font-size:var(--t3);letter-spacing:.05em;text-transform:uppercase;opacity:.6;position:relative;order:2}
 .sheet .num{font-weight:800;font-size:21cqw;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;position:relative;white-space:nowrap}
 .stack[data-mode="slow"] .small{order:0}
@@ -126,13 +124,14 @@ a.post:active .paper{background-color:var(--marker);color:var(--zocalo)}
 .ply{position:absolute;inset:0;transform-origin:50% 5%;pointer-events:none;box-shadow:0 1px 2px rgba(0,0,0,.4);background:var(--print)}
 .post .ply{background:var(--wall-deep)}
 .post .paper{z-index:2}
-.post .scrap{z-index:3}
+.scraps{position:absolute;left:0;right:0;top:0;height:60%;overflow:hidden;pointer-events:none;z-index:20;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+.post .scraps{z-index:3}
+.scraps .scrap{bottom:auto;height:calc(100% / .6)}
 .scrap,.falling,.core{position:absolute;inset:0;pointer-events:none}
 .core{background:#bd6860}
 .falling{inset:auto;container-type:inline-size;will-change:transform}
 #caidas{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:1000}
 .falling .sheet,.scrap .sheet{box-shadow:none}
-.scrap{filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
 
 .fuentes{max-width:1062px;margin:0 auto;font-size:var(--t3);line-height:1.6;opacity:.5;columns:2;column-gap:36px}
 .fuentes p{margin:0 0 6px;break-inside:avoid}
@@ -162,7 +161,7 @@ cite::after{content:"";position:absolute;left:-8px;right:-8px;top:-9px;bottom:-9
   .fuentes{columns:1}
 }
 /* Rendimiento: lo que se mueve y lo que lleva filtro de marcador vive en su propia capa del compositor */
-.paper,.stack .sheet,.mk,.mk-sm,.ply{will-change:transform}
+.paper,.stack .sheet,.mk,.mk-sm{will-change:transform}
 body::before{will-change:transform}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -247,7 +246,6 @@ body::before{will-change:transform}
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/Physics2DPlugin.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.27/dist/lenis.min.js"></script>
 <script>
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -255,8 +253,6 @@ body::before{will-change:transform}
   if (hasGsap) gsap.registerPlugin(Physics2DPlugin, SplitText);
   function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
-  var lenis = null;
-  if (!reduce && typeof Lenis !== 'undefined') { try { lenis = new Lenis({ autoRaf: true, lerp: 0.12, anchors: true }); } catch (e) {} }
 
   // La página descansa con el zócalo asomando. Se puede jalar más abajo, pero el muro empuja de regreso
   // en cada cuadro: en cuanto se suelta, vuelve suave y sin espera.
@@ -272,7 +268,7 @@ body::before{will-change:transform}
       if (L > 0 && y > L + .5 && !touching) {
         var ny = L + (y - L) * (reduce ? 0 : .92);
         if (ny - L < .6) ny = L;
-        if (lenis) lenis.scrollTo(ny, { immediate: true, force: true }); else window.scrollTo(0, ny);
+        window.scrollTo(0, ny);
         requestAnimationFrame(push);
       } else running = false;
     }
@@ -403,12 +399,14 @@ body::before{will-change:transform}
   // a partir del 6.º, el pedazo nuevo quedaría tapado por los de enfrente, así que ya no se crea (cero costo extra).
   var MAXSCRAPS = 6;
   function addScrap(box, sc, fallback){
-    var nail = box.querySelector('.tor'), first = box.querySelector('.scrap');
+    var nail = box.querySelector('.tor'), wrap = box.querySelector('.scraps');
+    if (!wrap) { wrap = document.createElement('div'); wrap.className = 'scraps'; box.insertBefore(wrap, fallback || nail); }
+    var first = wrap.querySelector('.scrap');
     sc.style.transformOrigin = '50% ' + (nail ? nail.offsetTop + 5.5 : 10) + 'px';
     sc.style.transform = 'rotate(' + ((Math.random() - .5) * 6).toFixed(2) + 'deg)';
     if (box.querySelectorAll('.scrap').length >= MAXSCRAPS) return;
     if (box.classList.contains('stack')) sc.querySelectorAll('.sheet > *').forEach(function(n){ n.remove(); }); // en la galería el texto nunca cae en el pedazo: fuera, más ligero
-    box.insertBefore(sc, first || fallback);
+    wrap.insertBefore(sc, first);
   }
   function tear(stack, oldSheet, still){
     var r = Math.random, rc = stack.getBoundingClientRect(), W = rc.width, H = rc.height;
@@ -427,7 +425,7 @@ body::before{will-change:transform}
       var sh = oldSheet.cloneNode(true); sh.classList.remove('under'); sh.style.zIndex = ''; sh.style.clipPath = poly(pts);
       w.appendChild(c); w.appendChild(sh); return w;
     }
-    var sc = piece(tab, shift(tab,0,e), 'scrap'); sc.style.zIndex = 20;
+    var sc = piece(tab, shift(tab,0,e), 'scrap');
     var body = piece(bodyPts, bodyCore, 'falling');
     body.style.left = rc.left + 'px'; body.style.top = rc.top + 'px'; body.style.width = W + 'px'; body.style.height = H + 'px';
     addScrap(stack, sc, null);
