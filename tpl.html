@@ -58,8 +58,8 @@ header.wrap{padding-top:clamp(20px,3.6vw,47px);padding-bottom:clamp(36px,5vw,60p
 .bar{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:baseline;justify-content:space-between}
 .wordmark{cursor:default;-webkit-user-select:none;user-select:none;font-weight:700;font-size:clamp(20px,2vw,25px);letter-spacing:-.01em;white-space:nowrap}
 .wordmark .a{opacity:.72;font-weight:400;font-size:var(--t2)}
-.wordmark.pie{display:inline-block;font-size:24px;line-height:1.25}
-.wordmark.pie .a{display:block;font-size:var(--t2);margin-top:2px}
+.wordmark.pie{display:inline-block;font-size:19px;line-height:1.25}
+.wordmark.pie .a{display:block;font-size:var(--t3);margin-top:2px}
 nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 30px}
 nav a{font-weight:400;font-size:var(--t2);text-transform:uppercase;opacity:.72;text-decoration:underline;text-underline-offset:3px}
 
@@ -140,8 +140,8 @@ a.post:active .paper{background-color:var(--marker);color:var(--zocalo)}
 /* Cierre del muro: frase a marcador y, abajo, zócalo de piedra clara con banqueta */
 .cierre{padding:clamp(30px,5vw,60px) var(--gutter) clamp(40px,5vw,64px);text-align:center}
 .zocalo{height:301px;background:url("assets/zocalo.webp") 50% 100%/auto 100% repeat-x;box-shadow:0 -5px 9px -3px rgba(0,0,0,.4)}
-blockquote{margin:0 auto 10px;max-width:70ch;font-size:var(--t2);font-weight:500;line-height:1.5;letter-spacing:.02em;opacity:.9}
-cite{display:block;width:fit-content;margin:0 auto 26px;position:relative;font-style:normal;font-size:var(--t3);opacity:.5}
+blockquote{margin:0 auto 10px;max-width:70ch;font-size:var(--t2);font-weight:500;line-height:1.4;letter-spacing:.01em;opacity:.85}
+cite{display:block;width:fit-content;margin:0 auto 24px;position:relative;font-style:normal;font-size:var(--t2);font-weight:500;letter-spacing:.01em;opacity:.85}
 /* tachado a mano, como el de Banksy: varias pasadas de la misma raya, de ida y vuelta */
 cite::after{content:"";position:absolute;left:-8px;right:-8px;top:-9px;bottom:-9px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 40' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%23f2ede5' stroke-width='.85' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1.4 21.2 C88.7 22.3 216.5 6.1 293.2 6.6 C207.0 7.6 72.5 20.5 0.6 20.9 C93.7 16.6 217.9 27.4 297.8 23.6 C212.2 20.6 77.9 24.6 8.8 26.7 C90.9 27.2 221.9 5.9 286.1 10.0 C195.4 10.7 68.7 22.3 2.6 26.2 C85.6 30.5 213.3 4.5 290.7 5.8' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M4.5 18.4 C90.0 23.0 226.3 28.8 296.1 32.6 C204.1 33.2 75.2 3.5 2.4 6.6 C86.4 5.8 220.4 8.8 297.7 11.1 C217.7 8.3 84.8 30.8 15.5 27.3 C96.3 24.9 229.3 8.7 296.3 10.4 C205.3 11.4 75.0 35.6 3.3 36.1 C97.1 32.9 222.7 23.7 301.3 19.6 C220.0 16.6 90.3 41.0 12.7 37.2' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M3.2 18.4 C87.3 17.6 221.5 37.1 287.7 37.2 C199.1 37.0 79.3 31.5 7.4 30.3 C94.3 26.0 216.2 10.6 287.2 13.1 C206.4 9.0 66.6 14.3 -1.2 14.8 C91.9 15.7 223.3 25.3 291.3 25.6 C200.1 21.3 73.9 1.6 4.4 5.2' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M36.7 2.9 Q52.3 27.0 96.1 33.0' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M241.6 0.7 Q263.7 13.2 305.9 39.6' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M27.0 0.1 Q51.9 18.1 57.5 32.6' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M40.8 2.1 Q62.1 17.3 108.2 37.6' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E") center/100% 100% no-repeat}
 
